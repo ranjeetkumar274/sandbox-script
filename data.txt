@@ -1,0 +1,246 @@
+
+24
+Teams Registered
+Business Challenge 1
+Cybersecurity
+Failed Login Pattern Analyzer for Early Threat Detection
+Build an automated solution that aggregates failed login events, groups them by user, IP, and time window, detects abnormal patterns, and sends concise alert summaries.
+
+Read more
+Register
+28
+Teams Registered
+Business Challenge 2
+Insurance
+Insurance Agentic Claims Processing Solution
+Build an agentic AI system for end-to-end claim processing including multi-channel intake, policy validation, missing information retrieval, document understanding, adjudication, human-in-loop handling, and CSR support.
+
+Read more
+Register
+30
+Teams Registered
+Business Challenge 3
+E Commerce
+Real Time AI Avatar Agent for Customer Experience
+Build a real-time AI avatar that interacts with customers, answers queries using enterprise knowledge, recommends products, and integrates with CRM and messaging platforms.
+
+Read more
+Register
+32
+Teams Registered
+Business Challenge 4
+Enterprise
+Enterprise Knowledge & Document Intelligence Copilot
+Build an enterprise-wide knowledge copilot integrating AI Search, reasoning agents, and multimodal document understanding. Enables summarization, comparison, and insight generation across enterprise content.
+
+Read more
+Register
+23
+Teams Registered
+Business Challenge 5
+Banking & Financial Services (BFSI)
+Real-Time Suspicious Transaction Detection Using Fabric IQ Ontology
+Build a real-time AML detection solution using Fabric IQ Ontology to model entities like Customer, Account, Transaction, Merchant, and detect suspicious patterns such as structuring, circular transactions, and hidden relationships
+
+Read more
+Register
+31
+Teams Registered
+Business Challenge 6
+Enterprise
+Learning Report Agent for Unified Analytics
+Build an automated reporting agent that integrates data from LMS, SharePoint, Excel, Power BI, and workforce systems, cleans and standardizes it, and generates structured reports and dashboards with actionable insights.
+
+Read more
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                        CLIENT / LOG SOURCE                          │
+│   Web App  │  Mobile App  │  Legacy System  │  Log Files (CSV/JSON) │
+└─────────────────────────┬───────────────────────────────────────────┘
+                          │  HTTP POST (failed login events)
+                          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                     INGESTION LAYER                                 │
+│              ASP.NET Core Web API  (REST endpoint)                  │
+│         Validates → Normalizes → Stamps timestamp                   │
+└─────────────────────────┬───────────────────────────────────────────┘
+                          │  Push normalized event
+                          ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                     EVENT QUEUE (Redis Streams / RabbitMQ)          │
+│         Decouples ingestion from processing                         │
+│         Buffers spikes, guarantees delivery                         │
+└────────────┬────────────────────────────────────────────────────────┘
+             │  Consume events
+             ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│               REAL-TIME PROCESSING SERVICE                          │
+│    .NET Background Worker (IHostedService)                          │
+│    • Writes raw events to PostgreSQL                                │
+│    • Updates Redis counters / sliding windows                       │
+│    • Calls Detection Engine after each event                        │
+└────────────┬────────────────────────────────────────────────────────┘
+             │  Evaluated event + window data
+             ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                   DETECTION ENGINE                                  │
+│    Pattern rules evaluated in-memory                                │
+│    • Brute force per user                                           │
+│    • IP sweeping multiple users                                     │
+│    • Distributed / low-and-slow attack                              │
+│    • Time-based spike detection                                     │
+└────────────┬────────────────────────────────────────────────────────┘
+             │  Alert payload if rule fires
+             ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    ALERT MODULE                                      │
+│    Deduplication → Severity rating → LLM summary (optional)         │
+│    • Persist to PostgreSQL alerts table                             │
+│    • Push to SignalR hub (WebSocket) → live dashboard               │
+│    • Email / Slack / webhook notification                           │
+└────────────┬────────────────────────────────────────────────────────┘
+             │  Real-time push
+             ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              FRONTEND DASHBOARD  (Angular)                          │
+│    • Live alert feed (SignalR)                                       │
+│    • Charts: attempts/min, top IPs, top targeted users              │
+│    • Alert management: acknowledge, escalate, dismiss               │
+└─────────────────────────────────────────────────────────────────────┘
+             │
+             ▼ (queries REST API for history)
+┌─────────────────────────────────────────────────────────────────────┐
+│             DATABASE LAYER  (PostgreSQL + Redis)                    │
+│    PostgreSQL: login_events, alerts, ip_metadata, users             │
+│    Redis:      sliding-window counters, recent-IP sets              │
+└─────────────────────────────────────────────────────────────────────┘
+
+
+
+
+┌──────────────────────────────────────────────────────┐
+│  STEP 1 — EVENT ORIGIN                               │
+│  Failed login occurs on client                       │
+│  Payload: { userId, ipAddress, timestamp,            │
+│             userAgent, region, appId }               │
+└──────────────────────┬───────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────┐
+│  STEP 2 — INGESTION API                              │
+│  POST /api/events/failed-login                       │
+│                                                      │
+│  ┌── Validate payload ──────────────────────────┐   │
+│  │  • Required fields present?                  │   │
+│  │  • IP format valid?                          │   │
+│  │  • Timestamp not in future?                  │   │
+│  └──────────────┬───────────────────────────────┘   │
+│                 │                                    │
+│    ┌─── NO ─────┘                                    │
+│    │                                                 │
+│    ▼                                                 │
+│  Return 400 Bad Request                              │
+│    │                                                 │
+│    └─── YES ──► Normalize & enrich                  │
+│                 • Assign eventId (GUID)              │
+│                 • UTC-normalize timestamp            │
+│                 • Lookup geo-region if missing       │
+│                 • Push to Redis Stream / RabbitMQ   │
+│                 • Return 202 Accepted               │
+└──────────────────────┬───────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────┐
+│  STEP 3 — EVENT QUEUE (Redis Stream)                 │
+│  Key: login_events_stream                            │
+│  Consumer group: processors                          │
+│  Message retained for 24 h (configurable)            │
+└──────────────────────┬───────────────────────────────┘
+                       │  Worker polls or listens
+                       ▼
+┌──────────────────────────────────────────────────────┐
+│  STEP 4 — PROCESSING WORKER                          │
+│                                                      │
+│  A. INSERT into login_events (PostgreSQL)            │
+│                                                      │
+│  B. Update Redis sliding windows                     │
+│     • INCR  user:{userId}:count   EX 300  (5 min)   │
+│     • INCR  ip:{ip}:count         EX 300             │
+│     • SADD  ip:{ip}:users  userId EX 300             │
+│     • ZADD  spike:global  ts  eventId               │
+│                                                      │
+│  C. Call Detection Engine with event context         │
+└──────────────────────┬───────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────┐
+│  STEP 5 — DETECTION ENGINE (rule evaluation loop)   │
+│                                                      │
+│  ┌─ Rule 1: Brute Force ──────────────────────────┐ │
+│  │  IF user:{userId}:count > BRUTE_FORCE_THRESHOLD │ │
+│  │  THEN → fire BRUTE_FORCE alert                 │ │
+│  └────────────────────────────────────────────────┘ │
+│                                                      │
+│  ┌─ Rule 2: IP Sweep ─────────────────────────────┐ │
+│  │  IF SCARD ip:{ip}:users > IP_SWEEP_THRESHOLD   │ │
+│  │  THEN → fire IP_SWEEP alert                    │ │
+│  └────────────────────────────────────────────────┘ │
+│                                                      │
+│  ┌─ Rule 3: Distributed Attack ───────────────────┐ │
+│  │  query DB: distinct IPs for userId in 10 min   │ │
+│  │  IF count > DISTRIBUTED_THRESHOLD              │ │
+│  │  THEN → fire DISTRIBUTED alert                 │ │
+│  └────────────────────────────────────────────────┘ │
+│                                                      │
+│  ┌─ Rule 4: Global Spike ─────────────────────────┐ │
+│  │  ZCOUNT spike:global (now-60s) now             │ │
+│  │  IF count > SPIKE_THRESHOLD                    │ │
+│  │  THEN → fire SPIKE alert                       │ │
+│  └────────────────────────────────────────────────┘ │
+│                                                      │
+│  Any rules fired?                                    │
+│    NO  ──► ACK queue message, loop back             │
+│    YES ──► Pass alert(s) to Alert Module            │
+└──────────────────────┬───────────────────────────────┘
+                       │ (one or more alerts)
+                       ▼
+┌──────────────────────────────────────────────────────┐
+│  STEP 6 — ALERT MODULE                               │
+│                                                      │
+│  A. DEDUPLICATION                                    │
+│     • Key: alertType + userId/ip + 5-min window     │
+│     • Identical alert already active?               │
+│         YES → increment count, skip re-insert       │
+│         NO  → continue                              │
+│                                                      │
+│  B. SEVERITY SCORING                                 │
+│     score = normalize(attemptCount, uniqueIPs,       │
+│                        windowDuration)               │
+│     score 0–40  → LOW                               │
+│     score 41–70 → MEDIUM                            │
+│     score 71–100→ HIGH / CRITICAL                   │
+│                                                      │
+│  C. AI SUMMARY (optional, async)                    │
+│     Call LLM API with raw stats                     │
+│     → "User admin had 42 failed logins from 6       │
+│         IPs in 3 minutes. Possible brute force."    │
+│                                                      │
+│  D. PERSIST → alerts table (PostgreSQL)             │
+│                                                      │
+│  E. NOTIFY                                           │
+│     • SignalR → Angular dashboard (< 1 s)           │
+│     • Email / Slack (severity HIGH+)                │
+└──────────────────────┬───────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────┐
+│  STEP 7 — DASHBOARD RECEIVES ALERT                   │
+│  Angular subscribes to SignalR hub                   │
+│  Alert banner pops up in real-time                   │
+│  Charts refresh (ng-charts / ChartJS)                │
+│  Analyst can: Acknowledge / Escalate / Dismiss       │
+└──────────────────────────────────────────────────────┘
