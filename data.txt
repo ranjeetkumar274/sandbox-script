@@ -1,246 +1,903 @@
+import { useState } from "react";
 
-24
-Teams Registered
-Business Challenge 1
-Cybersecurity
-Failed Login Pattern Analyzer for Early Threat Detection
-Build an automated solution that aggregates failed login events, groups them by user, IP, and time window, detects abnormal patterns, and sends concise alert summaries.
+const data = {
+  sections: [
+    {
+      id: "intellij-ui",
+      icon: "🖥️",
+      label: "IntelliJ UI",
+      color: "#818cf8",
+      chapters: [
+        {
+          title: "IDE Layout — Know Every Panel",
+          content: [
+            {
+              type: "panel-grid",
+              panels: [
+                { name: "Project Panel", key: "Alt+1 / ⌘1", desc: "Left sidebar showing your file/folder tree. Right-click any folder for New → Java Class. Drag files to move them between packages." },
+                { name: "Editor Tabs", key: "Ctrl+E", desc: "Center area where you write code. Middle-click a tab to close it. Drag tabs to split the editor into two panes side-by-side." },
+                { name: "Run Panel", key: "Alt+4", desc: "Bottom panel showing console output. Has Rerun, Stop, and Clear buttons. Stays open after the program ends." },
+                { name: "Debug Panel", key: "Alt+5", desc: "Shows Variables, Watches, and call stack while debugging. Only appears when you run in Debug mode (Shift+F9)." },
+                { name: "Terminal", key: "Alt+F12", desc: "Full bash/cmd terminal inside IntelliJ. Run javac, git commands, or anything you would do in a separate terminal." },
+                { name: "Structure", key: "Alt+7", desc: "Right panel listing all methods and fields in the current file. Click any method to jump to it instantly." },
+                { name: "Event Log", key: "bottom-right corner", desc: "Shows indexing status, Gradle sync results, plugin updates. Click the 'Event Log' text to see full history." },
+                { name: "Version Control", key: "Alt+9", desc: "Git panel — see staged/unstaged files, commit history, branches. Essential once you start using Git." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "First-Time Configuration Checklist",
+          content: [
+            {
+              type: "checklist",
+              items: [
+                { step: "Set your JDK", detail: "File → Project Structure (Ctrl+Alt+Shift+S) → Platform Settings → SDKs → click + → Add JDK. Browse to your Java install (e.g. C:\\Program Files\\Java\\jdk-21 on Windows). Set Project SDK to the same JDK." },
+                { step: "Pick a theme", detail: "File → Settings → Appearance & Behavior → Appearance → Theme. Darcula = dark, IntelliJ Light = light, High Contrast = accessibility. Apply and OK." },
+                { step: "Set font and size", detail: "Settings → Editor → Font. Set to JetBrains Mono (bundled and excellent for code) or Consolas. Size 14 to 16. Check Enable ligatures for nicer arrows." },
+                { step: "Enable auto-import", detail: "Settings → Editor → General → Auto Import → Java section → tick 'Add unambiguous imports on the fly' AND 'Optimize imports on the fly'. Removes unused imports automatically." },
+                { step: "Show line numbers", detail: "Settings → Editor → General → Appearance → check Show line numbers. Also check Show method separators to add a faint line between methods." },
+                { step: "Set code style", detail: "Settings → Editor → Code Style → Java. Tab size = 4, Indent = 4. Google or Sun style are popular. Pick one and be consistent." },
+                { step: "Enable soft wrap (optional)", detail: "Settings → Editor → General → Soft Wraps → check Soft-wrap files. Useful if you dislike horizontal scrolling for long lines." },
+                { step: "Increase memory for large projects", detail: "Help → Change Memory Settings → bump to 2048 MB if your machine has 8 GB or more RAM. IntelliJ runs noticeably faster with more heap space." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "Toolbar and Status Bar Explained",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "▶ Run button (top right)", desc: "Runs the last-used run configuration. The dropdown next to it lets you pick which class or config to run. Keyboard: Shift+F10." },
+                { label: "🐛 Debug button", desc: "Same as Run but attaches the debugger so breakpoints work. Always use this when you want to pause and inspect code. Keyboard: Shift+F9." },
+                { label: "🔨 Build button", desc: "Compiles the project without running it. Shows all compile errors immediately. Useful for catching mistakes fast before running. Keyboard: Ctrl+F9." },
+                { label: "Run Configurations dropdown", desc: "The dropdown between the hammer and run button. Each entry is a saved 'how to run this' config. Go to Edit Configurations to create custom configs with arguments." },
+                { label: "Status bar (very bottom)", desc: "Shows current line:column number, file encoding (UTF-8), line endings (CRLF on Windows / LF on Mac), Git branch name, and indexing spinner." },
+                { label: "Indexing spinner", desc: "IntelliJ scans all your project files on startup to build its internal index for autocomplete. Wait for it to finish before expecting full autocomplete to work. Usually 10 to 30 seconds." },
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "java-basics",
+      icon: "📄",
+      label: "Java Basics",
+      color: "#38bdf8",
+      chapters: [
+        {
+          title: "Creating Your First Java Program — Step by Step",
+          content: [
+            {
+              type: "steps",
+              items: [
+                { step: 1, title: "Create a New Project", detail: "File → New → Project. Select Java on the left panel. Pick your JDK from the dropdown on the right. Give it a name like JavaPractice. Click Create. IntelliJ sets up the project with a src folder automatically." },
+                { step: 2, title: "Create a Java Class", detail: "Right-click the src folder in the Project panel → New → Java Class. Type HelloWorld (no spaces, CamelCase is Java convention). Press Enter. IntelliJ creates HelloWorld.java with the class skeleton already written inside." },
+                { step: 3, title: "Add a main method", detail: "Click inside the class body (between the outer curly braces). Type psvm and press Tab. IntelliJ expands it to: public static void main(String[] args) { }. Your cursor lands inside the method, ready to type." },
+                { step: 4, title: "Add a print statement", detail: "Inside main(), type sout and press Tab. It becomes System.out.println(). Type your message inside the quotes: System.out.println(\"Hello, Java!\"); — do not forget the semicolon at the end." },
+                { step: 5, title: "Run the program", detail: "Press Shift+F10 (Windows/Linux) or Ctrl+R (Mac). Or click the green triangle in the gutter next to main(). The Run panel opens at the bottom showing your output. If you see Hello, Java! printed — it works!" },
+                { step: 6, title: "Make changes and re-run", detail: "Edit your code, then press Shift+F10 again. IntelliJ auto-saves and recompiles before every run. You never need to manually hit Ctrl+S (but it does not hurt if you do)." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "Live Templates — Type a Short Code, Get Full Syntax",
+          content: [
+            {
+              type: "shortcuts-table",
+              headers: ["Type this", "Press", "Expands to"],
+              rows: [
+                ["psvm", "Tab", "public static void main(String[] args) {}"],
+                ["sout", "Tab", "System.out.println()"],
+                ["soutv", "Tab", "System.out.println(\"varName = \" + varName) — auto picks last variable"],
+                ["soutp", "Tab", "Prints all method parameters with their names and values"],
+                ["soutm", "Tab", "System.out.println(\"ClassName.methodName\") — great for tracing flow"],
+                ["fori", "Tab", "for (int i = 0; i < ; i++) {} — cursor placed on the limit value"],
+                ["iter", "Tab", "for (Type item : collection) {} — enhanced for-each with correct type"],
+                ["itar", "Tab", "for (int i = 0; i < array.length; i++) {} — array index loop"],
+                ["itco", "Tab", "for (Iterator i = col.iterator(); i.hasNext();) {} — manual iterator"],
+                ["ifn", "Tab", "if (var == null) {} — null check"],
+                ["inn", "Tab", "if (var != null) {} — not-null check"],
+                ["thr", "Tab", "throw new — starts a throw statement"],
+                ["lazy", "Tab", "Lazy initialization pattern with a null check guard"],
+                ["toar", "Tab", "collection.toArray(new Type[0]) — convert list to array"],
+                ["St", "Tab", "String — saves keystrokes when declaring string variables in loops"],
+              ]
+            }
+          ]
+        },
+        {
+          title: "Postfix Completions — Type After the Variable",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "arr.fori → Tab", desc: "for (int i = 0; i < arr.length; i++) — auto-fills the array name and its .length in the loop condition. Much faster than typing the full loop." },
+                { label: "list.for → Tab", desc: "for (Element e : list) — creates an enhanced for-each with the correct element type inferred automatically by IntelliJ." },
+                { label: "str.null → Tab", desc: "if (str == null) {} — wraps the variable in a null check with the variable name filled in automatically." },
+                { label: "str.notnull → Tab", desc: "if (str != null) {} — wraps in a not-null check. Very common pattern in Java to guard against NPEs." },
+                { label: "n.var → Tab", desc: "int var = n; — wraps the expression in a new local variable declaration with correct type." },
+                { label: "condition.if → Tab", desc: "if (condition) {} — wraps a boolean expression in an if block around it." },
+                { label: "exception.throw → Tab", desc: "throw exception; — converts an exception expression into a complete throw statement." },
+                { label: "str.return → Tab", desc: "return str; — wraps the expression in a return statement. Great for one-liner returns." },
+                { label: "items.stream → Tab", desc: "items.stream() — starts a Stream pipeline on any Collection. Use before .filter().map().collect() chains." },
+                { label: "condition.while → Tab", desc: "while (condition) {} — wraps a boolean in a while loop. Use for input-driven loops." },
+                { label: "n.switch → Tab", desc: "switch (n) {} — wraps a value in a switch statement with the variable filled in." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "Essential Keyboard Shortcuts",
+          content: [
+            {
+              type: "shortcut-groups",
+              groups: [
+                {
+                  name: "Navigation",
+                  shortcuts: [
+                    { action: "Search Everywhere — find any file, class, symbol, action, or setting", win: "Double Shift", mac: "Double Shift" },
+                    { action: "Go to class by name", win: "Ctrl+N", mac: "⌘+O" },
+                    { action: "Go to any file by name", win: "Ctrl+Shift+N", mac: "⌘+Shift+O" },
+                    { action: "Go to declaration (where variable or method is defined)", win: "Ctrl+B or Ctrl+Click", mac: "⌘+B or ⌘+Click" },
+                    { action: "Go to implementation of an interface or abstract method", win: "Ctrl+Alt+B", mac: "⌘+Alt+B" },
+                    { action: "Go to specific line number", win: "Ctrl+G", mac: "⌘+L" },
+                    { action: "Navigate back and forward like browser history", win: "Ctrl+Alt+← / →", mac: "⌘+[ / ]" },
+                    { action: "Recent files popup switcher", win: "Ctrl+E", mac: "⌘+E" },
+                    { action: "Find text in current file", win: "Ctrl+F", mac: "⌘+F" },
+                    { action: "Find and Replace in current file", win: "Ctrl+R", mac: "⌘+R" },
+                    { action: "Find text across all project files", win: "Ctrl+Shift+F", mac: "⌘+Shift+F" },
+                    { action: "Jump to next / previous error or warning in file", win: "F2 / Shift+F2", mac: "F2 / Shift+F2" },
+                  ]
+                },
+                {
+                  name: "Editing",
+                  shortcuts: [
+                    { action: "Basic autocomplete — works everywhere", win: "Ctrl+Space", mac: "Ctrl+Space" },
+                    { action: "Smart type-aware autocomplete — filters by expected return type", win: "Ctrl+Shift+Space", mac: "Ctrl+Shift+Space" },
+                    { action: "Quick Fix and Intention Actions on any red or yellow highlight", win: "Alt+Enter", mac: "Alt+Enter" },
+                    { action: "Complete current statement — adds semicolon or closing brace", win: "Ctrl+Shift+Enter", mac: "⌘+Shift+Enter" },
+                    { action: "Duplicate current line below", win: "Ctrl+D", mac: "⌘+D" },
+                    { action: "Delete current line entirely", win: "Ctrl+Y", mac: "⌘+Delete" },
+                    { action: "Move current line up or down", win: "Alt+Shift+↑/↓", mac: "Alt+Shift+↑/↓" },
+                    { action: "Move entire method block up or down", win: "Ctrl+Shift+↑/↓", mac: "⌘+Shift+↑/↓" },
+                    { action: "Expand or shrink selection region intelligently", win: "Ctrl+W / Ctrl+Shift+W", mac: "Alt+↑ / Alt+↓" },
+                    { action: "Toggle single-line comment //", win: "Ctrl+/", mac: "⌘+/" },
+                    { action: "Toggle block comment between /* and */", win: "Ctrl+Shift+/", mac: "⌘+Shift+/" },
+                    { action: "Reformat and auto-indent entire file", win: "Ctrl+Alt+L", mac: "⌘+Alt+L" },
+                    { action: "Optimize imports — remove all unused import statements", win: "Ctrl+Alt+O", mac: "Ctrl+Alt+O" },
+                    { action: "Show parameter hints for the method you are calling", win: "Ctrl+P", mac: "⌘+P" },
+                    { action: "Show quick documentation popup for symbol under cursor", win: "Ctrl+Q", mac: "F1" },
+                    { action: "Surround selected code with try-catch, if, for, etc.", win: "Ctrl+Alt+T", mac: "⌘+Alt+T" },
+                    { action: "Paste from clipboard history — pick from last 10 copies", win: "Ctrl+Shift+V", mac: "⌘+Shift+V" },
+                    { action: "Join lines — merge next line into current line", win: "Ctrl+Shift+J", mac: "Ctrl+Shift+J" },
+                  ]
+                },
+                {
+                  name: "Refactoring",
+                  shortcuts: [
+                    { action: "Rename variable, method, or class everywhere in the project", win: "Shift+F6", mac: "Shift+F6" },
+                    { action: "Extract selection into a local variable", win: "Ctrl+Alt+V", mac: "⌘+Alt+V" },
+                    { action: "Extract selection into a separate method", win: "Ctrl+Alt+M", mac: "⌘+Alt+M" },
+                    { action: "Extract value into a constant", win: "Ctrl+Alt+C", mac: "⌘+Alt+C" },
+                    { action: "Extract value into a class field", win: "Ctrl+Alt+F", mac: "⌘+Alt+F" },
+                    { action: "Inline a variable back to where it is used", win: "Ctrl+Alt+N", mac: "⌘+Alt+N" },
+                    { action: "Change method signature — add, remove, or rename parameters", win: "Ctrl+F6", mac: "⌘+F6" },
+                    { action: "Move class to a different package (updates all imports)", win: "F6", mac: "F6" },
+                    { action: "Find all usages of a symbol across the entire project", win: "Alt+F7", mac: "Alt+F7" },
+                    { action: "Highlight all usages of a symbol in the current file", win: "Ctrl+Shift+F7", mac: "⌘+Shift+F7" },
+                  ]
+                },
+                {
+                  name: "Running and Building",
+                  shortcuts: [
+                    { action: "Run the current file directly from the editor", win: "Ctrl+Shift+F10", mac: "Ctrl+Shift+R" },
+                    { action: "Re-run the last used run configuration", win: "Shift+F10", mac: "Ctrl+R" },
+                    { action: "Run the last configuration in debug mode", win: "Shift+F9", mac: "Ctrl+D" },
+                    { action: "Stop the currently running program", win: "Ctrl+F2", mac: "⌘+F2" },
+                    { action: "Build the project — compile without running", win: "Ctrl+F9", mac: "⌘+F9" },
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          title: "Code Generation with Alt+Insert",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "Constructor", desc: "Place cursor inside a class body, press Alt+Insert → Constructor. Pick which fields to include. IntelliJ writes the full constructor with all field assignments. No more manual typing." },
+                { label: "Getter and Setter", desc: "Alt+Insert → Getter and Setter. Select the fields you want. IntelliJ generates getFieldName() and setFieldName() methods with correct types. Pick Getter only, Setter only, or both." },
+                { label: "equals() and hashCode()", desc: "Critical for using objects as keys in HashMaps or storing in HashSets. IntelliJ generates a correct implementation based on selected fields. Never write this by hand — it is error-prone." },
+                { label: "toString()", desc: "Generates a readable string like ClassName{field1=val1, field2=val2}. Makes debugging far easier — just print the object instead of writing custom print logic." },
+                { label: "Override Methods", desc: "Select parent class methods to override. IntelliJ adds the @Override annotation and the correct method signature with a super() call already inside." },
+                { label: "Implement Methods", desc: "If your class implements an interface, use this to generate all required abstract method stubs with the correct return types." },
+                { label: "Test", desc: "Generates a JUnit test class for the current class. Each public method gets a test method stub. Useful once you start adding unit tests to your DSA solutions." },
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "dsa-setup",
+      icon: "🧠",
+      label: "DSA Setup",
+      color: "#34d399",
+      chapters: [
+        {
+          title: "Complete Project Structure for DSA",
+          content: [
+            {
+              type: "tree",
+              root: "JavaPractice/",
+              nodes: [
+                { path: "src/", type: "folder", desc: "Root source directory — IntelliJ manages this" },
+                { path: "src/basics/", type: "folder", desc: "Single-file practice programs" },
+                { path: "src/basics/DataTypes.java", type: "file", desc: "Primitive types, casting, overflow, widening vs narrowing" },
+                { path: "src/basics/Loops.java", type: "file", desc: "for, while, do-while, break, continue, labeled loops" },
+                { path: "src/basics/Strings.java", type: "file", desc: "String methods — charAt, substring, split, indexOf, replace" },
+                { path: "src/basics/ArrayBasics.java", type: "file", desc: "1D and 2D arrays, Arrays.sort(), Arrays.copyOf()" },
+                { path: "src/basics/Methods.java", type: "file", desc: "Overloading, pass-by-value, varargs, recursion intro" },
+                { path: "src/basics/OOP.java", type: "file", desc: "Classes, inheritance, polymorphism, abstract, interfaces" },
+                { path: "src/dsa/", type: "folder", desc: "All DSA problems organized by topic" },
+                { path: "src/dsa/arrays/", type: "folder", desc: "Array problems — Two Sum, Kadane, Rotate, Product Except Self" },
+                { path: "src/dsa/strings/", type: "folder", desc: "String problems — Palindrome, Anagram, Longest Substring" },
+                { path: "src/dsa/linkedlist/", type: "folder", desc: "Linked List — define Node class here, Reverse, Cycle, Merge" },
+                { path: "src/dsa/stack/", type: "folder", desc: "Stack — Valid Parentheses, Next Greater Element, Min Stack" },
+                { path: "src/dsa/queue/", type: "folder", desc: "Queue and Deque — Sliding Window Maximum, BFS problems" },
+                { path: "src/dsa/trees/", type: "folder", desc: "Binary Tree, BST, N-ary trees, BFS levels, DFS traversals" },
+                { path: "src/dsa/graphs/", type: "folder", desc: "Adjacency list and matrix, BFS, DFS, Dijkstra, Union-Find" },
+                { path: "src/dsa/sorting/", type: "folder", desc: "Bubble, Selection, Merge, Quick, Heap, Counting, Radix Sort" },
+                { path: "src/dsa/searching/", type: "folder", desc: "Binary Search — standard, lower bound, upper bound, rotated" },
+                { path: "src/dsa/recursion/", type: "folder", desc: "Pure recursion, memoization intro, and backtracking" },
+                { path: "src/dsa/dp/", type: "folder", desc: "Dynamic Programming — Fibonacci, Knapsack, LCS, LIS, Matrix" },
+                { path: "src/dsa/greedy/", type: "folder", desc: "Greedy — Activity Selection, Jump Game, Huffman Coding" },
+                { path: "src/dsa/bitwise/", type: "folder", desc: "Bit manipulation — XOR tricks, shifts, bitmasks, Brian Kernighan" },
+                { path: "src/dsa/math/", type: "folder", desc: "GCD, LCM, Sieve of Eratosthenes, modular arithmetic, fast power" },
+                { path: "src/dsa/hashing/", type: "folder", desc: "Frequency counters, custom hash maps, collision strategies" },
+                { path: "src/patterns/", type: "folder", desc: "Design patterns — for later when you start OOP design" },
+                { path: "src/patterns/creational/", type: "folder", desc: "Singleton, Factory, Builder, Abstract Factory, Prototype" },
+                { path: "src/patterns/structural/", type: "folder", desc: "Adapter, Decorator, Proxy, Facade, Composite, Bridge" },
+              ]
+            }
+          ]
+        },
+        {
+          title: "How to Create Packages and Classes in IntelliJ",
+          content: [
+            {
+              type: "steps",
+              items: [
+                { step: 1, title: "Create a package (folder)", detail: "Right-click src in the Project panel → New → Package. Type dsa.arrays — the dot notation tells IntelliJ to create a dsa folder with arrays inside it. Both appear in the tree. Packages also appear in the package declaration at the top of every Java file." },
+                { step: 2, title: "Create a class in the package", detail: "Right-click the arrays package → New → Java Class. Type the problem name in PascalCase — for example TwoSum. IntelliJ creates TwoSum.java and automatically adds package dsa.arrays; at the very top. Never delete or edit that line manually." },
+                { step: 3, title: "Start with the problem comment block", detail: "Before writing any code, add a Javadoc comment above the class with: Problem name, Source (LeetCode number or GFG link), Difficulty, full URL, Description, and Constraints. This becomes invaluable when reviewing solutions weeks later." },
+                { step: 4, title: "Write multiple approach methods", detail: "Add solveBrute() and solveOptimal() as separate static methods. Write a comment directly above each one with Time complexity and Space complexity. Comparing both helps you understand WHY the optimal approach is better." },
+                { step: 5, title: "Add a main with test cases", detail: "Always include public static void main(String[] args) at the bottom with at least 2 to 3 test cases: a normal case, an edge case like empty array or single element, and a larger case. Run directly from IntelliJ without any test framework needed." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "DSA Problem File Template",
+          content: [
+            {
+              type: "code",
+              lang: "java",
+              code: `package dsa.arrays;
 
-Read more
-Register
-28
-Teams Registered
-Business Challenge 2
-Insurance
-Insurance Agentic Claims Processing Solution
-Build an agentic AI system for end-to-end claim processing including multi-channel intake, policy validation, missing information retrieval, document understanding, adjudication, human-in-loop handling, and CSR support.
+/**
+ * Problem   : Two Sum
+ * Source    : LeetCode #1
+ * Difficulty: Easy
+ * Link      : https://leetcode.com/problems/two-sum/
+ *
+ * Description:
+ *   Given an array of integers nums and an integer target,
+ *   return indices of the two numbers that add up to target.
+ *
+ * Constraints:
+ *   - 2 <= nums.length <= 10^4
+ *   - Each input has exactly one solution
+ *   - You may not use the same element twice
+ */
+public class TwoSum {
 
-Read more
-Register
-30
-Teams Registered
-Business Challenge 3
-E Commerce
-Real Time AI Avatar Agent for Customer Experience
-Build a real-time AI avatar that interacts with customers, answers queries using enterprise knowledge, recommends products, and integrates with CRM and messaging platforms.
+    // ── Approach 1: Brute Force ──────────────────────────────
+    // Time: O(n²) | Space: O(1)
+    // Check every pair — correct but too slow for large inputs
+    public static int[] solveBrute(int[] nums, int target) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[i] + nums[j] == target) {
+                    return new int[]{i, j};
+                }
+            }
+        }
+        return new int[]{};
+    }
 
-Read more
-Register
-32
-Teams Registered
-Business Challenge 4
-Enterprise
-Enterprise Knowledge & Document Intelligence Copilot
-Build an enterprise-wide knowledge copilot integrating AI Search, reasoning agents, and multimodal document understanding. Enables summarization, comparison, and insight generation across enterprise content.
+    // ── Approach 2: HashMap (Optimal) ────────────────────────
+    // Time: O(n) | Space: O(n)
+    // Store each number's index; look up complement on each step
+    public static int[] solveOptimal(int[] nums, int target) {
+        java.util.HashMap<Integer, Integer> map = new java.util.HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+            if (map.containsKey(complement)) {
+                return new int[]{map.get(complement), i};
+            }
+            map.put(nums[i], i);
+        }
+        return new int[]{};
+    }
 
-Read more
-Register
-23
-Teams Registered
-Business Challenge 5
-Banking & Financial Services (BFSI)
-Real-Time Suspicious Transaction Detection Using Fabric IQ Ontology
-Build a real-time AML detection solution using Fabric IQ Ontology to model entities like Customer, Account, Transaction, Merchant, and detect suspicious patterns such as structuring, circular transactions, and hidden relationships
+    // ── Main: test both approaches ───────────────────────────
+    public static void main(String[] args) {
+        // Test 1: normal case
+        int[] r1 = solveOptimal(new int[]{2, 7, 11, 15}, 9);
+        System.out.println("Test 1: [" + r1[0] + ", " + r1[1] + "]"); // [0, 1]
 
-Read more
-Register
-31
-Teams Registered
-Business Challenge 6
-Enterprise
-Learning Report Agent for Unified Analytics
-Build an automated reporting agent that integrates data from LMS, SharePoint, Excel, Power BI, and workforce systems, cleans and standardizes it, and generates structured reports and dashboards with actionable insights.
+        // Test 2: answer is not the first two elements
+        int[] r2 = solveOptimal(new int[]{3, 2, 4}, 6);
+        System.out.println("Test 2: [" + r2[0] + ", " + r2[1] + "]"); // [1, 2]
 
-Read more
+        // Test 3: same value appears at two different indices
+        int[] r3 = solveOptimal(new int[]{3, 3}, 6);
+        System.out.println("Test 3: [" + r3[0] + ", " + r3[1] + "]"); // [0, 1]
+    }
+}`
+            }
+          ]
+        },
+        {
+          title: "DSA Learning Roadmap — What to Study in Order",
+          content: [
+            {
+              type: "roadmap",
+              phases: [
+                {
+                  phase: "Phase 1 — Java Fundamentals",
+                  color: "#38bdf8",
+                  topics: ["Variables and Data Types", "Conditionals and Loops", "Methods and Recursion Intro", "Arrays — 1D and 2D", "Strings and StringBuilder", "OOP — class, object, inheritance"]
+                },
+                {
+                  phase: "Phase 2 — Core DSA",
+                  color: "#34d399",
+                  topics: ["Array problems — Two Sum, Max Subarray, Kadane", "String problems — Palindrome, Anagram", "Linked List — reverse, detect cycle, merge", "Stack — valid parentheses, next greater element", "Queue and Deque patterns", "Binary Search — basic and lower/upper bound"]
+                },
+                {
+                  phase: "Phase 3 — Intermediate DSA",
+                  color: "#f59e0b",
+                  topics: ["Sorting — Merge Sort, Quick Sort, Heap Sort", "Trees — Inorder, Preorder, Postorder, BFS, DFS", "Binary Search Tree operations", "HashMap and HashSet deep dive", "Two Pointers technique", "Sliding Window technique"]
+                },
+                {
+                  phase: "Phase 4 — Advanced DSA",
+                  color: "#f87171",
+                  topics: ["Graphs — BFS, DFS, Dijkstra, Union-Find, Topological Sort", "Dynamic Programming — Knapsack, LCS, LIS, Matrix Chain", "Backtracking — N-Queens, Sudoku, Permutations, Subsets", "Tries — prefix trees and autocomplete", "Heaps and Priority Queues — K-th largest, Merge K lists", "Greedy — Activity Selection, Huffman Coding"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "debugging",
+      icon: "🐞",
+      label: "Debugging",
+      color: "#fb923c",
+      chapters: [
+        {
+          title: "Debugger Basics — Stop Using sout to Debug",
+          content: [
+            {
+              type: "steps",
+              items: [
+                { step: 1, title: "Set a Breakpoint", detail: "Click in the grey gutter area to the LEFT of a line number. A solid red circle appears. Code will pause BEFORE executing that line. Click the dot again to remove it. Right-click the dot to get advanced options like Log message (which logs without pausing execution)." },
+                { step: 2, title: "Run in Debug Mode", detail: "Press Shift+F9 (Windows) or Ctrl+D (Mac), or click the bug icon at the top. The program runs normally until it hits your breakpoint, then pauses completely. The Debug panel opens at the bottom with several tabs." },
+                { step: 3, title: "Inspect the Variables Panel", detail: "When paused, the Variables tab shows EVERY variable in scope with their current values. Expand objects and arrays with the triangle to see their contents. This alone replaces 90 percent of debug print statements. You see everything at once." },
+                { step: 4, title: "Step Through Code", detail: "F8 = Step Over — runs the next line without entering any method calls. F7 = Step Into — enters the method call to inspect its internals. Shift+F8 = Step Out — finishes the current method and returns to its caller. F9 = Resume — runs until the next breakpoint." },
+                { step: 5, title: "Evaluate Expressions Live", detail: "While paused at any breakpoint, press Alt+F8. A popup lets you type any valid Java expression and evaluate it immediately using the current variable values. Try nums.length, map.size(), or i * 2 + 1. This is powerful for testing assumptions in place." },
+                { step: 6, title: "Add Watches", detail: "In the Variables tab, click the + icon to add a Watch expression. It evaluates on every step. Track result.size(), stack.peek(), or current.next to monitor values across many steps without clicking through the Variables panel each time." },
+                { step: 7, title: "Conditional Breakpoints", detail: "Right-click any breakpoint dot → Add Condition. Type a Java boolean expression like i == 5 or nums[i] < 0. The debugger only pauses when that condition is true. Essential for loops with many iterations where you only care about one specific case." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "Debugger Keyboard Shortcuts",
+          content: [
+            {
+              type: "shortcut-groups",
+              groups: [
+                {
+                  name: "Breakpoints",
+                  shortcuts: [
+                    { action: "Toggle breakpoint on current line", win: "Ctrl+F8", mac: "⌘+F8" },
+                    { action: "View all breakpoints in the project", win: "Ctrl+Shift+F8", mac: "⌘+Shift+F8" },
+                    { action: "Run to cursor — skip ahead to where cursor is", win: "Alt+F9", mac: "Alt+F9" },
+                    { action: "Mute all breakpoints temporarily without deleting them", win: "Mute button in Debug panel toolbar", mac: "Mute button in Debug panel toolbar" },
+                  ]
+                },
+                {
+                  name: "Stepping Through Code",
+                  shortcuts: [
+                    { action: "Step Over — execute next line, skip method calls", win: "F8", mac: "F8" },
+                    { action: "Step Into — enter the method call and inspect it", win: "F7", mac: "F7" },
+                    { action: "Force Step Into — enter even JDK standard library methods", win: "Alt+Shift+F7", mac: "Alt+Shift+F7" },
+                    { action: "Step Out — finish current method and return to caller", win: "Shift+F8", mac: "Shift+F8" },
+                    { action: "Resume — continue execution until the next breakpoint", win: "F9", mac: "F9" },
+                    { action: "Evaluate expression popup — test any Java code while paused", win: "Alt+F8", mac: "Alt+F8" },
+                    { action: "Quick evaluate — evaluate the selected code inline", win: "Ctrl+Alt+F8", mac: "⌘+Alt+F8" },
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          title: "Understanding Java Error Messages",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "NullPointerException", desc: "You called a method or accessed a field on an object that is null. Read the full stack trace — it points to the exact line and the exact variable. Check whether the object was ever initialized. In Java 17 and later the error message names which variable was null." },
+                { label: "ArrayIndexOutOfBoundsException", desc: "You accessed arr[i] where i is negative or i >= arr.length. Most common cause is an off-by-one error in a loop. Fix: use i < arr.length, not i <= arr.length. Print i and arr.length just before the crash to see the exact mismatch." },
+                { label: "StackOverflowError", desc: "Infinite recursion. Your recursive method keeps calling itself without ever reaching the base case, or the base case condition is wrong. Add System.out.println at the very top of the method to see which values it is being called with. The pattern will be obvious." },
+                { label: "ClassCastException", desc: "You cast an object to a type it is not. Always check with instanceof before casting: if (obj instanceof String s) and use s directly inside. The new pattern variable syntax from Java 16 makes this clean and safe." },
+                { label: "ConcurrentModificationException", desc: "You added or removed an element from a list or map while iterating over it with a for-each loop. Fix: use an Iterator with iterator.remove(), collect items to delete into a separate list and remove after the loop, or use removeIf() for lists." },
+                { label: "cannot find symbol (compile error)", desc: "Typo in a variable or method name, or you are using it outside of its declared scope. The line number in the error points right to it. Remember that Java is case-sensitive — myVar and myvar are completely different names." },
+                { label: "method X is not applicable for the arguments", desc: "You are passing wrong types or the wrong number of arguments to a method. Press Ctrl+P with the cursor inside the parentheses — IntelliJ shows exactly which types the method expects at each position." },
+                { label: "Red squiggle in editor", desc: "Compile error — your code will NOT run until every red squiggle is fixed. Hover over it to read the error message. Alt+Enter shows suggested fixes. Fixing one red error often makes several others disappear too." },
+                { label: "Yellow squiggle in editor", desc: "Warning — code will run but something could be improved. Common: unused variable, raw generic type, unnecessary cast. Alt+Enter shows what IntelliJ recommends. These are worth fixing as good coding habits." },
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "productivity",
+      icon: "⚡",
+      label: "Productivity",
+      color: "#a78bfa",
+      chapters: [
+        {
+          title: "Power Features That Save Hours",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "Search Everywhere — Double Shift", desc: "The single most important shortcut in all of IntelliJ. Finds any class, file, symbol, action, or IDE setting by typing its name. Type 'format' to find the reformat action, type 'Main' to jump to Main.java, type 'dark' to find the theme setting. When in doubt, Double Shift." },
+                { label: "Find Action — Ctrl+Shift+A", desc: "Like Search Everywhere but only searches IDE actions and settings. Type what you want to do in plain English: 'split editor', 'increase font', 'toggle distraction free', 'git commit'. The shortcut key is shown next to each action so you learn them naturally." },
+                { label: "Multiple Cursors — Alt+Click or double-Ctrl+↓", desc: "Hold Alt and click in multiple places to place multiple cursors simultaneously. Type once and edit in all places at the same time. Or press Ctrl twice quickly, hold it, then press ↓ to add cursors on lines below. Great for renaming a pattern repeated across many lines." },
+                { label: "Column Selection — Alt+Shift+Insert", desc: "Toggle column block selection mode. Then click and drag to select a vertical rectangular block of text. Delete an entire column, or type the same text before multiple lines at once. Toggle back with the same shortcut." },
+                { label: "Local History — No Git Required", desc: "Right-click any file → Local History → Show History. IntelliJ automatically saves file snapshots every time you make significant changes, completely independent of Git. Recover code you deleted hours ago. This has saved people from complete disasters many times." },
+                { label: "Scratch Files — Ctrl+Alt+Shift+Insert", desc: "Create a temporary Java file that lives outside your project. Perfect for testing a quick idea, trying out an API method, or running a code snippet without cluttering your project. Scratch files persist across IDE restarts and live in IDE settings." },
+                { label: "Split Editor — Right-click tab → Split Right", desc: "View two files side by side in the same window. Right-click any file tab and choose Split Right or Split Down. Read a problem statement on one side while writing the solution on the other. Compare two algorithm implementations side by side." },
+                { label: "Clipboard History — Ctrl+Shift+V", desc: "Paste from a history of your last ten or so copied items, not just the most recent copy. A popup shows all previous clips — select which one to paste. Never lose something you forgot to paste immediately after copying." },
+                { label: "Distraction-Free Mode", desc: "View → Appearance → Enter Distraction Free Mode. Hides every panel, toolbar, and tab — just the code on a clean dark screen. Toggle back with Escape or the same menu path. Good for deep focus sessions on hard problems." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "Code Inspection and Quality Tools",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "Intention Actions — Alt+Enter on anything highlighted", desc: "The yellow light bulb or colored stripe on the right scrollbar means IntelliJ has a suggestion. Alt+Enter on any highlighted code — not just errors — shows potential improvements: simplify if-else chains, convert loops to streams, add missing annotations, implement interface methods, wrap in null check." },
+                { label: "Inspect Code — Analyze → Inspect Code", desc: "Runs all configured inspections across the entire file or entire project at once. Shows a structured tree report grouped by inspection category. Run this before finishing any DSA solution to catch unused variables, potential NPEs, or inefficient patterns you missed." },
+                { label: "Find Usages — Alt+F7", desc: "Place cursor on any variable, method, or class name and press Alt+F7. Shows every location it is used across the entire project in a panel at the bottom. Click any result to jump there instantly. Better than Ctrl+F because it understands code structure, not just text." },
+                { label: "Call Hierarchy — Ctrl+Alt+H", desc: "Shows which methods call the current method, and what calls those callers, up the entire chain. Gives you a complete picture of how execution flows through the program. Essential for understanding larger codebases." },
+                { label: "Type Hierarchy — Ctrl+H", desc: "Shows parent classes and all subclasses of the current class in a tree. Essential for understanding inheritance chains when practicing OOP and design patterns." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "Must-Install Plugins",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "Key Promoter X", desc: "The most valuable plugin for beginners. Every time you use the mouse to do something that has a keyboard shortcut, it shows a popup with the shortcut name and key. It tracks how often you miss each one. You learn the entire keyboard within weeks without any deliberate memorization effort." },
+                { label: "Rainbow Brackets", desc: "Colors each pair of matching brackets, parentheses, and braces the same distinct color. Deeply nested code becomes dramatically easier to read. Especially helpful for complex stream pipelines, nested conditionals, and recursive calls." },
+                { label: "GitToolBox", desc: "Shows the last git commit message and author for each line inline in the editor (git blame), right next to the code without cluttering the UI. Also shows unmerged commit counts in the status bar." },
+                { label: "Indent Rainbow", desc: "Colors each indentation level a different shade. You can instantly see which code block any line belongs to, especially valuable in deeply nested loops and conditionals." },
+                { label: "String Manipulation", desc: "Adds right-click menu options to transform strings: camelCase to snake_case and back, URL encode and decode, sort selected lines alphabetically, switch quote types, capitalize first letter, and many more transformations." },
+                { label: "CodeGlance Pro", desc: "Adds a minimap on the right side of the editor (like VS Code's minimap) showing your entire file at a reduced scale. Click anywhere on the minimap to jump to that section immediately. Great for files with many methods." },
+                { label: "LeetCode Editor", desc: "Browse LeetCode problem lists, read full problem descriptions, write solutions, run test cases, and submit — all directly inside IntelliJ. Results appear in the Run panel. Never leave the IDE to solve problems." },
+              ]
+            },
+            {
+              type: "note",
+              text: "Install any plugin: File → Settings → Plugins → Marketplace tab → search the plugin name → Install → Restart IDE"
+            }
+          ]
+        },
+        {
+          title: "File and Project Management",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "Move Class — F6", desc: "Moves a class to a different package and automatically updates ALL import statements in every file that references it across the whole project. Never move .java files manually through your operating system file explorer — IntelliJ will not know and imports will break." },
+                { label: "Copy Class — F5", desc: "Copies a class to a new location with a new name. Useful for creating a variation of a solution to compare two approaches side by side in separate files." },
+                { label: "Autoscroll from Source", desc: "Click the gear icon in the Project panel → Autoscroll from Source. Now whenever you switch editor focus to a file, IntelliJ automatically expands and highlights that file in the project tree. Very useful for larger projects." },
+                { label: "Open in Terminal", desc: "Right-click any file in the Project panel → Open In → Terminal. Opens the built-in terminal and automatically navigates to that file's directory. Much faster than manual navigation." },
+                { label: "Compare Files — Ctrl+D", desc: "Select two files in the project panel, press Ctrl+D. Opens a side-by-side diff viewer showing exactly what is different between them. Also works by right-clicking a file → Compare with Clipboard." },
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "git",
+      icon: "🌿",
+      label: "Git and VCS",
+      color: "#4ade80",
+      chapters: [
+        {
+          title: "Setting Up Git Inside IntelliJ",
+          content: [
+            {
+              type: "steps",
+              items: [
+                { step: 1, title: "Initialize a repository", detail: "VCS → Create Git Repository → select your project folder → OK. IntelliJ creates a hidden .git folder. The status bar at the very bottom now shows the current branch name like Git: master or Git: main." },
+                { step: 2, title: "Connect to GitHub (strongly recommended)", detail: "File → Settings → Version Control → GitHub → Add Account → Log In via GitHub. A browser window opens for authentication. Once connected, you can push code to GitHub directly from IntelliJ without opening a separate terminal." },
+                { step: 3, title: "Create a .gitignore file", detail: "Right-click the project root → New → File → name it .gitignore (with the dot). Add these lines: .idea/ to exclude IntelliJ config, *.class to exclude compiled bytecode, and out/ to exclude the build output folder. Keeps your remote repo clean." },
+                { step: 4, title: "Make your first commit", detail: "Press Ctrl+K. The Commit panel opens showing all changed and new files. Check the files to include. Write a commit message like 'Initial commit — project setup'. Click Commit. The changes are saved to your local git history." },
+                { step: 5, title: "Push to GitHub", detail: "Press Ctrl+Shift+K. A Push dialog shows your commits and which remote branch they will go to. Click Push. Your code is now on GitHub and backed up remotely." },
+              ]
+            }
+          ]
+        },
+        {
+          title: "Daily Git Shortcuts",
+          content: [
+            {
+              type: "shortcut-groups",
+              groups: [
+                {
+                  name: "Core Git Actions in IntelliJ",
+                  shortcuts: [
+                    { action: "Commit changes — opens commit panel", win: "Ctrl+K", mac: "⌘+K" },
+                    { action: "Push to remote GitHub", win: "Ctrl+Shift+K", mac: "⌘+Shift+K" },
+                    { action: "Pull latest changes from remote", win: "Ctrl+T", mac: "⌘+T" },
+                    { action: "View git log — full commit history with graph", win: "Alt+9 then Log tab", mac: "⌘+9 then Log tab" },
+                    { action: "Revert a file to its state at the last commit", win: "Ctrl+Alt+Z", mac: "⌘+Alt+Z" },
+                    { action: "Show diff of current file vs last committed version", win: "Ctrl+D", mac: "⌘+D" },
+                    { action: "Show git blame inline — who last changed each line", win: "Right-click gutter → Annotate with Git Blame", mac: "Right-click gutter → Annotate with Git Blame" },
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          title: "Good Commit Message Style for DSA Projects",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "feat: add TwoSum with HashMap — O(n) solution", desc: "Use feat: when adding a new problem file or new feature to the project." },
+                { label: "feat: add BinarySearch — both iterative and recursive approaches", desc: "Include what approaches you added so the git history is searchable later." },
+                { label: "fix: correct off-by-one in MergeSort merge step", desc: "Use fix: when correcting a bug in existing code." },
+                { label: "refactor: replace Stack with ArrayDeque for better performance", desc: "Use refactor: when improving existing code without changing what it does." },
+                { label: "docs: add time and space complexity comments to all array files", desc: "Use docs: when only adding or updating comments and documentation." },
+                { label: "chore: add .gitignore and initial README.md", desc: "Use chore: for project setup and housekeeping that does not affect any logic." },
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "java-ref",
+      icon: "📚",
+      label: "Java Reference",
+      color: "#fbbf24",
+      chapters: [
+        {
+          title: "Java Collections Cheat Sheet for DSA",
+          content: [
+            {
+              type: "code",
+              lang: "java",
+              code: `// ── Arrays ─────────────────────────────────────────────────
+int[] arr = new int[5];                      // [0,0,0,0,0]
+int[] arr2 = {1, 2, 3, 4, 5};               // literal initialization
+Arrays.sort(arr);                            // in-place ascending O(n log n)
+Arrays.sort(arr, 0, 4);                      // sort subarray indices [0..3]
+int idx = Arrays.binarySearch(arr, 3);      // requires sorted array — O(log n)
+int[] copy = Arrays.copyOf(arr, arr.length);// full copy
+int[] slice = Arrays.copyOfRange(arr, 1, 4);// copy indices 1, 2, 3 only
+Arrays.fill(arr, -1);                        // set every element to -1
+System.out.println(Arrays.toString(arr));    // print as [1, 2, 3, 4, 5]
+int[][] grid = new int[3][4];               // 2D array: 3 rows, 4 columns
 
+// ── ArrayList ───────────────────────────────────────────────
+List<Integer> list = new ArrayList<>();
+list.add(5);                                 // append at end — O(1) amortized
+list.add(0, 10);                             // insert at index 0 — O(n)
+list.get(0);                                 // access by index — O(1)
+list.set(0, 99);                             // update by index — O(1)
+list.remove(0);                              // remove by INDEX — O(n) shift
+list.remove(Integer.valueOf(5));             // remove by VALUE — O(n) search
+Collections.sort(list);                      // sort ascending
+Collections.sort(list, (a, b) -> b - a);    // sort descending with lambda
+Collections.reverse(list);                   // reverse in place
+list.size();                                 // count of elements
+list.contains(5);                            // linear search — O(n)
+list.indexOf(5);                             // first index of value, -1 if absent
+list.subList(1, 4);                          // live view of indices [1, 2, 3]
 
+// ── HashMap ─────────────────────────────────────────────────
+Map<String, Integer> map = new HashMap<>();
+map.put("a", 1);                             // insert or update — O(1) average
+map.get("a");                                // returns 1, or null if missing
+map.getOrDefault("z", 0);                   // returns 0 if key does not exist
+map.containsKey("a");                        // true — O(1) average
+map.remove("a");                             // delete key — O(1) average
+map.size();                                  // number of key-value pairs
+map.putIfAbsent("b", 0);                    // only inserts if key absent
+map.merge("a", 1, Integer::sum);            // adds 1 to existing, or inserts 1
 
+// Iterate all entries:
+for (Map.Entry<String, Integer> e : map.entrySet())
+    System.out.println(e.getKey() + " -> " + e.getValue());
+// Iterate keys only:
+for (String key : map.keySet()) { }
+// Iterate values only:
+for (int val : map.values()) { }
 
+// ── HashSet ─────────────────────────────────────────────────
+Set<Integer> set = new HashSet<>();
+set.add(5);                                  // add — O(1) average
+set.contains(5);                             // true — O(1) average
+set.remove(5);                               // O(1) average
+Set<Integer> sorted = new TreeSet<>(set);   // sorted order using TreeSet
 
-┌─────────────────────────────────────────────────────────────────────┐
-│                        CLIENT / LOG SOURCE                          │
-│   Web App  │  Mobile App  │  Legacy System  │  Log Files (CSV/JSON) │
-└─────────────────────────┬───────────────────────────────────────────┘
-                          │  HTTP POST (failed login events)
-                          ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                     INGESTION LAYER                                 │
-│              ASP.NET Core Web API  (REST endpoint)                  │
-│         Validates → Normalizes → Stamps timestamp                   │
-└─────────────────────────┬───────────────────────────────────────────┘
-                          │  Push normalized event
-                          ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                     EVENT QUEUE (Redis Streams / RabbitMQ)          │
-│         Decouples ingestion from processing                         │
-│         Buffers spikes, guarantees delivery                         │
-└────────────┬────────────────────────────────────────────────────────┘
-             │  Consume events
-             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│               REAL-TIME PROCESSING SERVICE                          │
-│    .NET Background Worker (IHostedService)                          │
-│    • Writes raw events to PostgreSQL                                │
-│    • Updates Redis counters / sliding windows                       │
-│    • Calls Detection Engine after each event                        │
-└────────────┬────────────────────────────────────────────────────────┘
-             │  Evaluated event + window data
-             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                   DETECTION ENGINE                                  │
-│    Pattern rules evaluated in-memory                                │
-│    • Brute force per user                                           │
-│    • IP sweeping multiple users                                     │
-│    • Distributed / low-and-slow attack                              │
-│    • Time-based spike detection                                     │
-└────────────┬────────────────────────────────────────────────────────┘
-             │  Alert payload if rule fires
-             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    ALERT MODULE                                      │
-│    Deduplication → Severity rating → LLM summary (optional)         │
-│    • Persist to PostgreSQL alerts table                             │
-│    • Push to SignalR hub (WebSocket) → live dashboard               │
-│    • Email / Slack / webhook notification                           │
-└────────────┬────────────────────────────────────────────────────────┘
-             │  Real-time push
-             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│              FRONTEND DASHBOARD  (Angular)                          │
-│    • Live alert feed (SignalR)                                       │
-│    • Charts: attempts/min, top IPs, top targeted users              │
-│    • Alert management: acknowledge, escalate, dismiss               │
-└─────────────────────────────────────────────────────────────────────┘
-             │
-             ▼ (queries REST API for history)
-┌─────────────────────────────────────────────────────────────────────┐
-│             DATABASE LAYER  (PostgreSQL + Redis)                    │
-│    PostgreSQL: login_events, alerts, ip_metadata, users             │
-│    Redis:      sliding-window counters, recent-IP sets              │
-└─────────────────────────────────────────────────────────────────────┘
+// ── Stack — use Deque, NOT java.util.Stack ──────────────────
+Deque<Integer> stack = new ArrayDeque<>();
+stack.push(1);                               // push to top — O(1)
+stack.peek();                                // look at top without removing — O(1)
+stack.pop();                                 // remove and return top — O(1)
+stack.isEmpty();                             // check if empty
 
+// ── Queue ───────────────────────────────────────────────────
+Queue<Integer> queue = new LinkedList<>();
+queue.offer(1);                              // enqueue at back — O(1)
+queue.peek();                                // look at front — O(1)
+queue.poll();                                // dequeue from front — O(1)
 
+// ── PriorityQueue (Heap) ────────────────────────────────────
+PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Comparator.reverseOrder());
+// Custom comparator — sort int[] pairs by first element:
+PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+minHeap.offer(3);
+minHeap.peek();                              // min element — O(1)
+minHeap.poll();                              // remove and return min — O(log n)
 
+// ── StringBuilder ───────────────────────────────────────────
+StringBuilder sb = new StringBuilder();
+sb.append("hello");                          // add at end
+sb.insert(0, "prefix ");                     // insert at position
+sb.reverse();                                // reverse in place
+sb.deleteCharAt(sb.length() - 1);           // remove last character
+sb.delete(0, 3);                             // remove characters [0..2]
+sb.charAt(0);                                // read char at index
+sb.length();                                 // current length
+sb.toString();                               // convert to immutable String`
+            }
+          ]
+        },
+        {
+          title: "Core Algorithm Templates for DSA",
+          content: [
+            {
+              type: "code",
+              lang: "java",
+              code: `// ── Two Pointers ────────────────────────────────────────────
+int left = 0, right = arr.length - 1;
+while (left < right) {
+    if (conditionMet) return result;
+    else if (needLarger) left++;
+    else right--;
+}
 
-┌──────────────────────────────────────────────────────┐
-│  STEP 1 — EVENT ORIGIN                               │
-│  Failed login occurs on client                       │
-│  Payload: { userId, ipAddress, timestamp,            │
-│             userAgent, region, appId }               │
-└──────────────────────┬───────────────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│  STEP 2 — INGESTION API                              │
-│  POST /api/events/failed-login                       │
-│                                                      │
-│  ┌── Validate payload ──────────────────────────┐   │
-│  │  • Required fields present?                  │   │
-│  │  • IP format valid?                          │   │
-│  │  • Timestamp not in future?                  │   │
-│  └──────────────┬───────────────────────────────┘   │
-│                 │                                    │
-│    ┌─── NO ─────┘                                    │
-│    │                                                 │
-│    ▼                                                 │
-│  Return 400 Bad Request                              │
-│    │                                                 │
-│    └─── YES ──► Normalize & enrich                  │
-│                 • Assign eventId (GUID)              │
-│                 • UTC-normalize timestamp            │
-│                 • Lookup geo-region if missing       │
-│                 • Push to Redis Stream / RabbitMQ   │
-│                 • Return 202 Accepted               │
-└──────────────────────┬───────────────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│  STEP 3 — EVENT QUEUE (Redis Stream)                 │
-│  Key: login_events_stream                            │
-│  Consumer group: processors                          │
-│  Message retained for 24 h (configurable)            │
-└──────────────────────┬───────────────────────────────┘
-                       │  Worker polls or listens
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│  STEP 4 — PROCESSING WORKER                          │
-│                                                      │
-│  A. INSERT into login_events (PostgreSQL)            │
-│                                                      │
-│  B. Update Redis sliding windows                     │
-│     • INCR  user:{userId}:count   EX 300  (5 min)   │
-│     • INCR  ip:{ip}:count         EX 300             │
-│     • SADD  ip:{ip}:users  userId EX 300             │
-│     • ZADD  spike:global  ts  eventId               │
-│                                                      │
-│  C. Call Detection Engine with event context         │
-└──────────────────────┬───────────────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│  STEP 5 — DETECTION ENGINE (rule evaluation loop)   │
-│                                                      │
-│  ┌─ Rule 1: Brute Force ──────────────────────────┐ │
-│  │  IF user:{userId}:count > BRUTE_FORCE_THRESHOLD │ │
-│  │  THEN → fire BRUTE_FORCE alert                 │ │
-│  └────────────────────────────────────────────────┘ │
-│                                                      │
-│  ┌─ Rule 2: IP Sweep ─────────────────────────────┐ │
-│  │  IF SCARD ip:{ip}:users > IP_SWEEP_THRESHOLD   │ │
-│  │  THEN → fire IP_SWEEP alert                    │ │
-│  └────────────────────────────────────────────────┘ │
-│                                                      │
-│  ┌─ Rule 3: Distributed Attack ───────────────────┐ │
-│  │  query DB: distinct IPs for userId in 10 min   │ │
-│  │  IF count > DISTRIBUTED_THRESHOLD              │ │
-│  │  THEN → fire DISTRIBUTED alert                 │ │
-│  └────────────────────────────────────────────────┘ │
-│                                                      │
-│  ┌─ Rule 4: Global Spike ─────────────────────────┐ │
-│  │  ZCOUNT spike:global (now-60s) now             │ │
-│  │  IF count > SPIKE_THRESHOLD                    │ │
-│  │  THEN → fire SPIKE alert                       │ │
-│  └────────────────────────────────────────────────┘ │
-│                                                      │
-│  Any rules fired?                                    │
-│    NO  ──► ACK queue message, loop back             │
-│    YES ──► Pass alert(s) to Alert Module            │
-└──────────────────────┬───────────────────────────────┘
-                       │ (one or more alerts)
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│  STEP 6 — ALERT MODULE                               │
-│                                                      │
-│  A. DEDUPLICATION                                    │
-│     • Key: alertType + userId/ip + 5-min window     │
-│     • Identical alert already active?               │
-│         YES → increment count, skip re-insert       │
-│         NO  → continue                              │
-│                                                      │
-│  B. SEVERITY SCORING                                 │
-│     score = normalize(attemptCount, uniqueIPs,       │
-│                        windowDuration)               │
-│     score 0–40  → LOW                               │
-│     score 41–70 → MEDIUM                            │
-│     score 71–100→ HIGH / CRITICAL                   │
-│                                                      │
-│  C. AI SUMMARY (optional, async)                    │
-│     Call LLM API with raw stats                     │
-│     → "User admin had 42 failed logins from 6       │
-│         IPs in 3 minutes. Possible brute force."    │
-│                                                      │
-│  D. PERSIST → alerts table (PostgreSQL)             │
-│                                                      │
-│  E. NOTIFY                                           │
-│     • SignalR → Angular dashboard (< 1 s)           │
-│     • Email / Slack (severity HIGH+)                │
-└──────────────────────┬───────────────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────────────┐
-│  STEP 7 — DASHBOARD RECEIVES ALERT                   │
-│  Angular subscribes to SignalR hub                   │
-│  Alert banner pops up in real-time                   │
-│  Charts refresh (ng-charts / ChartJS)                │
-│  Analyst can: Acknowledge / Escalate / Dismiss       │
-└──────────────────────────────────────────────────────┘
+// ── Sliding Window — fixed size k ───────────────────────────
+int windowSum = 0, maxSum = 0;
+for (int i = 0; i < arr.length; i++) {
+    windowSum += arr[i];
+    if (i >= k - 1) {
+        maxSum = Math.max(maxSum, windowSum);
+        windowSum -= arr[i - (k - 1)];       // shrink left side
+    }
+}
+
+// ── Binary Search — standard template ───────────────────────
+int lo = 0, hi = arr.length - 1;
+while (lo <= hi) {
+    int mid = lo + (hi - lo) / 2;            // prevents integer overflow
+    if (arr[mid] == target) return mid;
+    else if (arr[mid] < target) lo = mid + 1;
+    else hi = mid - 1;
+}
+return -1;                                    // target not found
+
+// ── BFS — for graphs and tree level-order ───────────────────
+Queue<Integer> queue = new LinkedList<>();
+boolean[] visited = new boolean[n];
+queue.offer(start);
+visited[start] = true;
+while (!queue.isEmpty()) {
+    int curr = queue.poll();
+    for (int neighbor : adj.get(curr)) {
+        if (!visited[neighbor]) {
+            visited[neighbor] = true;
+            queue.offer(neighbor);
+        }
+    }
+}
+
+// ── DFS — recursive ─────────────────────────────────────────
+boolean[] visited = new boolean[n];
+void dfs(int node, List<List<Integer>> adj) {
+    visited[node] = true;
+    for (int neighbor : adj.get(node))
+        if (!visited[neighbor]) dfs(neighbor, adj);
+}
+
+// ── Backtracking skeleton ────────────────────────────────────
+List<List<Integer>> result = new ArrayList<>();
+void backtrack(int start, List<Integer> current, int[] nums) {
+    result.add(new ArrayList<>(current));     // snapshot: copy not reference
+    for (int i = start; i < nums.length; i++) {
+        current.add(nums[i]);                 // choose
+        backtrack(i + 1, current, nums);      // explore
+        current.remove(current.size() - 1);  // unchoose (backtrack)
+    }
+}
+
+// ── Merge Sort ──────────────────────────────────────────────
+void mergeSort(int[] arr, int l, int r) {
+    if (l >= r) return;
+    int mid = (l + r) / 2;
+    mergeSort(arr, l, mid);
+    mergeSort(arr, mid + 1, r);
+    merge(arr, l, mid, r);
+}
+void merge(int[] arr, int l, int mid, int r) {
+    int[] temp = Arrays.copyOfRange(arr, l, r + 1);
+    int i = 0, j = mid - l + 1, k = l;
+    while (i <= mid - l && j <= r - l)
+        arr[k++] = temp[i] <= temp[j] ? temp[i++] : temp[j++];
+    while (i <= mid - l) arr[k++] = temp[i++];
+    while (j <= r - l)   arr[k++] = temp[j++];
+}
+
+// ── Frequency Count — character frequency ───────────────────
+int[] freq = new int[26];                    // for lowercase a-z only
+for (char c : s.toCharArray()) freq[c - 'a']++;
+boolean isAnagram = Arrays.equals(freq1, freq2);  // O(26) = O(1)
+
+// ── Sieve of Eratosthenes — all primes up to n ──────────────
+boolean[] isComposite = new boolean[n + 1];
+for (int i = 2; i * i <= n; i++)
+    if (!isComposite[i])
+        for (int j = i * i; j <= n; j += i)
+            isComposite[j] = true;
+// Primes are all i from 2 to n where isComposite[i] == false`
+            }
+          ]
+        },
+        {
+          title: "Essential Java Methods Quick Reference",
+          content: [
+            {
+              type: "list",
+              items: [
+                { label: "Math.max(a, b) and Math.min(a, b)", desc: "Returns the larger or smaller of two values. Works with int, long, and double. Use instead of writing if-else comparisons for simple max and min tracking." },
+                { label: "Math.abs(n)", desc: "Returns the absolute value. Essential for distance calculations, handling negative indices, and absolute difference problems." },
+                { label: "Math.pow(base, exp)", desc: "Returns base raised to the power exp as a double. Cast to int or long if needed: (long)Math.pow(2, 10) = 1024L." },
+                { label: "Math.sqrt(n)", desc: "Returns square root as a double. Key optimization for primality testing: only check divisors up to (int)Math.sqrt(n) instead of all the way to n." },
+                { label: "Integer.MAX_VALUE and Integer.MIN_VALUE", desc: "2,147,483,647 and negative 2,147,483,648. Standard initial values for tracking maximum or minimum in a loop. Beats hardcoding arbitrary large numbers." },
+                { label: "Integer.parseInt(str)", desc: "Converts a String to an int. Throws NumberFormatException if the string contains non-numeric characters. Use in problems that give you digit strings." },
+                { label: "String.valueOf(n)", desc: "Converts int, long, char, or boolean to String. More explicit than the trick of prepending an empty string." },
+                { label: "Character.isDigit(c) and isLetter(c)", desc: "True if the char is 0-9 or an alphabetic character. Also available: isUpperCase(), isLowerCase(), toLowerCase(), toUpperCase() — all without converting to String first." },
+                { label: "Collections.sort(list, comparator)", desc: "Sort with a custom ordering using a lambda. Example: (a, b) -> b - a sorts descending. Example: (a, b) -> a[0] - b[0] sorts int arrays by their first element." },
+                { label: "Arrays.stream(arr).sum() and .max() and .min()", desc: "One-line aggregate operations on primitive arrays. max() and min() return OptionalInt so call getAsInt() after." },
+                { label: "String.join(delimiter, list)", desc: "Joins all list elements into one string separated by the delimiter. Great for producing readable output without a StringBuilder loop." },
+                { label: "str.toCharArray()", desc: "Converts a String to a char[]. Essential for iterating over individual characters. Much more common in DSA than using charAt() in a loop." },
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+function PanelGrid({ panels }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(255px, 1fr))", gap: "9px" }}>
+      {panels.map((p, i) => (
+        <div key={i} style={{ background: "#0c1420", border: "1px solid #1a2840", borderRadius: "10px", padding: "13px 14px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "7px", gap: "8px" }}>
+            <span style={{ fontWeight: 700, fontSize: "13px", color: "#dde6f0" }}>{p.name}</span>
+            <code style={{ fontSize: "10px", background: "#1a2840", color: "#7dd3fc", padding: "2px 7px", borderRadius: "4px", whiteSpace: "nowrap", flexShrink: 0 }}>{p.key}</code>
+          </div>
+          <p style={{ margin: 0, fontSize: "12px", color: "#5a7080", lineHeight: "1.7" }}>{p.desc}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Checklist({ items }) {
+  const [done, setDone] = useState({});
+  const count = Object.values(done).filter(Boolean).length;
+  return (
+    <div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        {items.map((item, i) => (
+          <div key={i} onClick={() => setDone(p => ({ ...p, [i]: !p[i] }))} style={{
+            background: done[i] ? "#0a1e12" : "#090e1a",
+            border: `1px solid ${done[i] ? "#1a5c3050" : "#151f30"}`,
+            borderRadius: "10px", padding: "11px 14px", cursor: "pointer",
+            display: "flex", gap: "12px", alignItems: "flex-start", transition: "all 0.15s"
+          }}>
+            <div style={{
+              width: "17px", height: "17px", borderRadius: "4px", flexShrink: 0, marginTop: "2px",
+              background: done[i] ? "#15803d" : "transparent",
+              border: `2px solid ${done[i] ? "#15803d" : "#2a3a50"}`,
+              display: "flex", alignItems: "center", justifyContent: "center"
+            }}>
+              {done[i] && <span style={{ fontSize: "10px", color: "#fff", fontWeight: 700 }}>✓</span>}
+            </div>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: "13px", color: done[i] ? "#6ee7a0" : "#bfccd8", marginBottom: "3px", textDecoration: done[i] ? "line-through" : "none", opacity: done[i] ? 0.65 : 1 }}>{item.step}</div>
+              <div style={{ fontSize: "12px", color: "#4a6070", lineHeight: "1.7" }}>{item.detail}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize: "11.5px", color: "#2a3a50", textAlign: "right", marginTop: "7px" }}>
+        {count}/{items.length} done {count === items.length ? "🎉" : ""}
+      </div>
+    </div>
+  );
+}
+
+function Steps({ items }) {
+  return (
+    <div>
+      {items.map((item, i) => (
+        <div key={i} style={{ display: "flex" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginRight: "14px" }}>
+            <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "#0e1e34", border: "2px solid #2563eb", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "11.5px", color: "#60a5fa", flexShrink: 0 }}>{item.step}</div>
+            {i < items.length - 1 && <div style={{ width: "2px", flex: 1, background: "#151f30", margin: "4px 0", minHeight: "16px" }} />}
+          </div>
+          <div style={{ paddingBottom: i < items.length - 1 ? "16px" : "0", paddingTop: "3px" }}>
+            <div style={{ fontWeight: 700, fontSize: "13.5px", color: "#e2e8f0", marginBottom: "4px" }}>{item.title}</div>
+            <div style={{ fontSize: "12px", color: "#4a6070", lineHeight: "1.75" }}>{item.detail}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ShortcutsTable({
