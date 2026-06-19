@@ -900,4 +900,54 @@ function Steps({ items }) {
   );
 }
 
-function ShortcutsTable({
+function ShortcutsTable({ headers, rows }) {
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0, fontSize: "12px" }}>
+        <thead>
+          <tr>
+            {headers.map((header, i) => (
+              <th
+                key={`${header}-${i}`}
+                style={{
+                  textAlign: "left",
+                  padding: "10px 12px",
+                  background: "#0e1e34",
+                  color: "#bfdbfe",
+                  borderBottom: "1px solid #1e293b",
+                  fontWeight: 700
+                }}
+              >
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => {
+            const rowKey = `${row.join("||")}::${rowIndex}`;
+            return (
+              <tr key={rowKey}>
+                {row.map((cell, cellIndex) => (
+                <td
+                  key={`${rowKey}::${cellIndex}`}
+                  style={{
+                    padding: "10px 12px",
+                    color: "#94a3b8",
+                    borderBottom: "1px solid #151f30",
+                    verticalAlign: "top"
+                  }}
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default data;
