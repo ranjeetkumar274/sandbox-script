@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/workspaces/sandbox-script/backend-dotnet/MyApi/MyApi.csproj": {}
+    "/home/runner/work/sandbox-script/sandbox-script/backend-dotnet/MyApi/MyApi.csproj": {}
   },
   "projects": {
-    "/workspaces/sandbox-script/backend-dotnet/MyApi/MyApi.csproj": {
+    "/home/runner/work/sandbox-script/sandbox-script/backend-dotnet/MyApi/MyApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspaces/sandbox-script/backend-dotnet/MyApi/MyApi.csproj",
+        "projectUniqueName": "/home/runner/work/sandbox-script/sandbox-script/backend-dotnet/MyApi/MyApi.csproj",
         "projectName": "MyApi",
-        "projectPath": "/workspaces/sandbox-script/backend-dotnet/MyApi/MyApi.csproj",
-        "packagesPath": "/home/codespace/.nuget/packages/",
-        "outputPath": "/workspaces/sandbox-script/backend-dotnet/MyApi/obj/",
+        "projectPath": "/home/runner/work/sandbox-script/sandbox-script/backend-dotnet/MyApi/MyApi.csproj",
+        "packagesPath": "/home/runner/.nuget/packages/",
+        "outputPath": "/home/runner/work/sandbox-script/sandbox-script/backend-dotnet/MyApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/codespace/.nuget/NuGet/NuGet.Config"
+          "/home/runner/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -24,6 +24,7 @@
         },
         "frameworks": {
           "net10.0": {
+            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {}
           }
@@ -38,10 +39,11 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "Microsoft.AspNetCore.OpenApi": {
@@ -68,7 +70,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.300/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
