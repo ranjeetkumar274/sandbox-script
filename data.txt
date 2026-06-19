@@ -906,9 +906,9 @@ function ShortcutsTable({ headers, rows }) {
       <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0, fontSize: "12px" }}>
         <thead>
           <tr>
-            {headers.map((header) => (
+            {headers.map((header, i) => (
               <th
-                key={header}
+                key={`${header}-${i}`}
                 style={{
                   textAlign: "left",
                   padding: "10px 12px",
@@ -924,23 +924,26 @@ function ShortcutsTable({ headers, rows }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr key={row.join("||")}>
-              {row.map((cell, cellIndex) => (
+          {rows.map((row, rowIndex) => {
+            const rowKey = `${row.join("||")}::${rowIndex}`;
+            return (
+              <tr key={rowKey}>
+                {row.map((cell, cellIndex) => (
                 <td
-                  key={`${row.join("||")}::${cellIndex}`}
+                  key={`${rowKey}::${cellIndex}`}
                   style={{
                     padding: "10px 12px",
                     color: "#94a3b8",
                     borderBottom: "1px solid #151f30",
                     verticalAlign: "top"
                   }}
-                >
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
